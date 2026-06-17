@@ -1,6 +1,10 @@
 function getUserLocation() {
     if (navigator.geolocation) {
-        navigator.geolocation.getCurrentPosition(success, error);
+       navigator.geolocation.getCurrentPosition(success, error, {
+       enableHighAccuracy: true,
+       timeout: 10000,
+       maximumAge: 0
+});
     } else {
         console.log("Geolocation is not supported by this browser.");
         getdate("Dhaka");
@@ -31,7 +35,8 @@ async function getdate(cityQuery) {
     const myKey = "8110f4c6c24c4b088b1205416262204";
 
 
-    const city = cityQuery || document.getElementById("search").value;
+  const input = document.getElementById("search");
+  const city = cityQuery || (input ? input.value : "");
 
     if (!city.trim()) {
 
@@ -169,8 +174,18 @@ async function fetchOtherCountries(limit = 2) {
 
     for (const city of citiesToFetch) {
         try {
-            const res = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${myKey}&q=${city}&days=1`);
-            const data = await res.json();
+           const res = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${myKey}&q=${city}&days=1`);
+
+          if (!res.ok) {
+           throw new Error(`API Error: ${res.status}`);
+          }
+
+        const data = await res.json();
+
+      if (!data?.current) {
+        console.log("Invalid data for:", city);
+         return;
+      }
 
             const rowHTML = `
                 <div class="location-row">
@@ -205,31 +220,24 @@ function showAllCities() {
 
 fetchOtherCountries(2);
 
-document.addEventListener("DOMContentLoaded", getUserLocation, getGreeting())
+document.addEventListener("DOMContentLoaded", () => {
+    getUserLocation();
+    getGreeting();
+});
 
 
 function getGreeting() {
-    const now = new Date();
-    const hours = now.getHours();
-    let showGreeting = document.getElementById("greeting");
+    const hours = new Date().getHours();
+    const el = document.getElementById("greeting");
+
     let greeting = "";
-    if (hours >= 23 || hours < 4) {
-        greeting = "Good Night ";
-    }
-    else if (hours >= 4 && hours < 12) {
-        greeting = "Good Morning ";
-    }
-    else if (hours >= 12 && hours < 17) {
-        greeting = "Good Afternoon ";
-    }
-    else {
-        greeting = "Good Evening ";
-    }
 
+    if (hours < 4) greeting = "Good Night 🌙";
+    else if (hours < 12) greeting = "Good Morning ☀️";
+    else if (hours < 17) greeting = "Good Afternoon 🌤️";
+    else greeting = "Good Evening 🌙";
 
-    if (showGreeting) {
-        showGreeting.textContent = greeting;
-    }
+    if (el) el.textContent = greeting;
 
     return greeting;
 }
