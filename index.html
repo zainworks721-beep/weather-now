@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Dashboard Pro</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+</head>
+
+<body>
+
+   <canvas id="bgCanvas"></canvas>
+    <div class="app-wrapper"  data-aos="fade-down" data-aos-delay="100">
+        <main class="dashboard">
+            <header class="top-bar">
+                <div class="user-greeting">
+                    <h2 id="greeting">Good Morning</h2>
+                </div>
+
+                <div class="search-section"  data-aos="fade-up" data-aos-delay="200">
+                    <div class="search-input">
+                        <i class="ph ph-magnifying-glass"></i>
+                        <input type="text" placeholder="Search your location" id="search">
+                    </div>
+                    <button id="search-btn" onclick="getdate()">Search</button>
+                </div>
+            </header>
+
+            <div class="content-grid">
+
+                <div class="col-left">
+                    <div class="card hero-card is-rainy">
+                        <div class="hero-top">
+                            <span class="location-tag"><i class="ph ph-map-pin"></i> Dhaka, Bangladesh</span>
+                            <div class="unit-toggle">°C <i class="ph ph-caret-down"></i></div>
+                        </div>
+
+                        <div class="hero-main">
+                            <div class="hero-info">
+                                <h1 class="day">Sunday</h1>
+                                <p class="date">04 Aug, 2024</p>
+                                <div class="hero-temp-parent">
+                                    <span class="degree">28°C</span>
+                                    <span class="range">/24°C</span>
+                                </div>
+                            </div>
+
+                            <div class="hero-visual">
+                                <div class="icon-wrap">
+                                    <div class="rain-fx" aria-hidden="true">
+                                        <span></span><span></span><span></span><span></span><span></span><span></span>
+                                    </div>
+                                    <img src="image 11.png" class="weather-3d" alt="Heavy rain weather icon">
+                                </div>
+                                <div class="weather-desc">
+                                    <h3 class="rain">Heavy Rain</h3>
+                                    <p class="feels">Feels like 31°</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card" id="cardother">
+                        <div class="section-header">
+                            <h3 class="heading">Others Countries</h3>
+                            <a href="javascript:void(0)" class="seeall" onclick="showAllCities()">See All <i
+                                    class="ph ph-caret-down"></i></a>
+                        </div>
+
+                        <div id="others-container" class="control"></div>
+                    </div>
+
+                     <div class="card forecast-card">
+                        <h3 class="heading">3 Day Forecast</h3>
+                        <div class="forecast-list">
+                            <div class="f-day">
+                                <p>Today</p>
+                                <img src="image 11.png" width="40" height="40" alt="Today weather icon">
+                                <h4>28°C</h4>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="col-right">
+                    <div class="card highlights-card">
+                        <h3 class="heading">Today's Highlight</h3>
+
+                        <div class="highlight-grid">
+                            <div class="h-item">
+                                <p><span class="icon-chip wind"><i class="ph ph-wind"></i></span> Wind Status</p>
+                                <div class="itemp">
+                                    <h4>7.90 <span>km/h</span></h4>
+                                    <small>9:00 AM</small>
+                                </div>
+                            </div>
+
+                            <div class="h-item">
+                                <p><span class="icon-chip humidity"><i class="ph ph-drop"></i></span> Humidity</p>
+                                <div class="itemp">
+                                    <h4>85<span> %</span></h4>
+                                    <small>Humidity is good</small>
+                                </div>
+                            </div>
+
+
+                        <div class="highlight-flex">
+                            <div class="h-item">
+                                <p><span class="icon-chip uv"><img src="hugeicons_uv-02.png" alt="UV icon" height="18" width="18"></span> UV index</p>
+                                <div class="itemp">
+                                    <h4>4<span> UV</span></h4>
+                                    <small>moderate</small>
+                                </div>
+                            </div>
+
+                            <div class="h-item">
+                                <p><span class="icon-chip visibility"><i class="fa-solid fa-eye"></i></span> Visibility</p>
+                                <div class="itemp">
+                                    <h4>5<span> Km</span></h4>
+                                    <small>9:00 AM</small>
+                                </div>
+                            </div>
+
+                               <div class="sunrise">
+                                <img src="image 9 (2).png" alt="Sunrise icon" height="75" width="75">
+                                <div class="textsunrise">
+                                    <p>Sunrise</p>
+                                    <h3>4:50 AM</h3>
+                                </div>
+                            </div>
+                        </div>
+
+                            <div class="sunrise">
+                                <img src="image 10.png" alt="Sunset icon" height="75" width="75">
+                                <div class="textsunrise">
+                                    <p>Sunset</p>
+                                    <h3>6:45 PM</h3>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script src="style.js"></script>
+    <script src="index.js"></script>
+
+
+     <!-- AOS -->
+  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+
+  <script>
+    AOS.init({
+      duration: 1200,
+      once: true,
+      offset: 120
+    });
+  </script>
+</body>
+
+</html>
