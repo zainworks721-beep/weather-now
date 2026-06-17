@@ -59,11 +59,7 @@ Some challenges faced during development:
 
 ---
 
-## 🌐 Live Demo
-
-[View Live Project](YOUR_LIVE_LINK)
-
----
+## 🌐 Live Demo https://zainworks721-beep.github.io/weather-now/
 
 ## 👨‍💻 Author
 
