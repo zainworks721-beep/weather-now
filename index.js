@@ -44,20 +44,55 @@ async function getdate(cityQuery) {
         return;
     }
 
-    const finalURL = `${baseURL}${method}?key=${myKey}&q=${city}&days=7`;
+    navigator.geolocation.getCurrentPosition(
+        success,
+        error,
+        {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+        }
+    );
+}
+
+function success(position) {
+    const { latitude, longitude } = position.coords;
+    getdate(`${latitude},${longitude}`);
+}
+
+function error(err) {
+    console.log("Location error:", err.message);
+    showError("Could not get your location, showing weather for Karachi");
+    getdate("Karachi");
+}
+
+async function getdate(cityQuery) {
+    const baseURL = "https://api.weatherapi.com/v1";
+    const myKey = "8110f4c6c24c4b088b1205416262204";
+
+    const input = document.getElementById("search");
+    const city = cityQuery || (input ? input.value : "");
+
+    if (!city || !city.trim()) {
+        if (!cityQuery) showError("Enter a city");
+        return;
+    }
+
+    const url = `${baseURL}/forecast.json?key=${myKey}&q=${city}&days=7`;
+
+    hideError();
+    showLoader();
 
     try {
-        let response = await fetch(finalURL);
+        const response = await fetch(url);
 
-        if (!response.ok) {
-            throw new Error(`HTTP Error: ${response.status}`);
-        }
+        if (!response.ok) throw new Error(`HTTP Error: ${response.status}`);
 
-        let data = await response.json();
+        const data = await response.json();
 
+        if (!data || data.error) {
 
-        if (data.error) {
-            alert(data.error.message);
+            showError(data?.error?.message || "Invalid data");
             return;
         }
 
@@ -65,96 +100,105 @@ async function getdate(cityQuery) {
 
     } catch (err) {
         console.log("Error:", err.message);
+        showError(err.message || "Something went wrong while fetching weather data");
     } finally {
-        document.getElementById("search").value = "";
+        if (input) input.value = "";
+        hideLoader();
     }
 }
 
-
 function renderCurrentWeather(data) {
+    if (!data) return;
+
     const {
-        location: { name, country, localtime },
-        current: {
-            temp_c,
-            feelslike_c,
-            condition: { text, icon }
-        },
-        forecast: {
-            forecastday: [{ day: { mintemp_c } }]
-        }
+        location,
+        current,
+        forecast
     } = data;
 
-    document.querySelector('.location-tag').innerHTML = `<i class="ph ph-map-pin"></i> ${name}, ${country}`;
+    const mintemp_c = forecast?.forecastday?.[0]?.day?.mintemp_c;
 
-    const date = new Date(localtime);
-    document.querySelector('.day').textContent = date.toLocaleDateString('en-US', { weekday: 'long' });
-    document.querySelector('.date').textContent = date.toLocaleDateString('en-US', {
-        day: '2-digit',
-        month: 'short',
-        year: 'numeric'
-    });
+    const locationEl = document.querySelector('.location-tag');
+    if (locationEl) {
+        locationEl.innerHTML = `<i class="ph ph-map-pin"></i> ${location.name}, ${location.country}`;
+    }
 
-    document.querySelector('.degree').textContent = `${temp_c}°C`;
-    document.querySelector('.range').textContent = `/${mintemp_c}°C`;
-    document.querySelector('.rain').textContent = text;
-    document.querySelector('.feels').textContent = `Feels like ${feelslike_c}°`;
-    document.querySelector('.weather-3d').src = `https:${icon}`;
+    const date = new Date(location.localtime);
+
+    const dayEl = document.querySelector('.day');
+    const dateEl = document.querySelector('.date');
+
+    if (dayEl) {
+        dayEl.textContent = date.toLocaleDateString('en-US', { weekday: 'long' });
+    }
+
+    if (dateEl) {
+        dateEl.textContent = date.toLocaleDateString('en-US', {
+            day: '2-digit',
+            month: 'short',
+            year: 'numeric'
+        });
+    }
+
+    const degreeEl = document.querySelector('.degree');
+    const rangeEl = document.querySelector('.range');
+    const rainEl = document.querySelector('.rain');
+    const feelsEl = document.querySelector('.feels');
+    const imgEl = document.querySelector('.weather-3d');
+
+    if (degreeEl) degreeEl.textContent = `${current.temp_c}°C`;
+    if (rangeEl) rangeEl.textContent = `/${mintemp_c}°C`;
+    if (rainEl) rainEl.textContent = current.condition.text;
+    if (feelsEl) feelsEl.textContent = `Feels like ${current.feelslike_c}°`;
+    if (imgEl) imgEl.src = `https:${current.condition.icon}`;
 }
+
+
 
 function renderHighlights(data) {
-    const {
-        current: {
-            wind_kph,
-            humidity,
-            uv,
-            vis_km
-        },
-        forecast: {
-            forecastday: [{ astro: { sunrise, sunset } }]
-        }
-    } = data;
+    if (!data) return;
+
+    const { wind_kph, humidity, uv, vis_km } = data.current;
+    const astro = data.forecast?.forecastday?.[0]?.astro;
 
     const items = document.querySelectorAll('.h-item h4');
-    items[0].innerHTML = `${wind_kph} <span>km/h</span>`;
-    items[1].innerHTML = `${humidity}<span> %</span>`;
-    items[2].innerHTML = `${uv}<span> UV</span>`;
-    items[3].innerHTML = `${vis_km}<span> Km</span>`;
 
-    document.querySelectorAll('.sunrise h3')[0].textContent = sunrise;
-    document.querySelectorAll('.sunrise h3')[1].textContent = sunset;
-}
+    if (items.length >= 4) {
+        items[0].innerHTML = `${wind_kph} <span>km/h</span>`;
+        items[1].innerHTML = `${humidity}<span>%</span>`;
+        items[2].innerHTML = `${uv}<span> UV</span>`;
+        items[3].innerHTML = `${vis_km}<span> Km</span>`;
+    }
 
-function renderForecast(data) {
+    const sun = document.querySelectorAll('.sunrise h3');
 
-
-    const { forecast: { forecastday } } = data;
+    if (astro && sun.length >= 2) {
+        sun[0].textContent = astro.sunrise;
+        sun[1].textContent = astro.sunset;
+    }
+} function renderForecast(data) {
+    if (!data) return;
 
     const forecastList = document.querySelector('.forecast-list');
+    if (!forecastList) return;
+
     forecastList.innerHTML = '';
 
-    forecastday.forEach((forecast, index) => {
-        const {
-            date,
-            day: {
-                maxtemp_c,
-                condition: { icon }
-            }
-        } = forecast;
+    data.forecast.forecastday.forEach((forecast, index) => {
 
         const dayName = index === 0
             ? 'Today'
-            : new Date(date).toLocaleDateString('en-US', { weekday: 'short' });
+            : new Date(forecast.date).toLocaleDateString('en-US', { weekday: 'short' });
 
-        forecastList.innerHTML += `
-      <div class="f-day">
-        <p>${dayName}</p>
-        <img src="https:${icon}" width="40" height="40" alt="weather icon">
-        <h4>${maxtemp_c}°C</h4>
-      </div>
-    `;
+        forecastList.insertAdjacentHTML('beforeend', `
+            <div class="f-day">
+                <p>${dayName}</p>
+                <img src="https:${forecast.day.condition.icon}" width="40" height="40">
+                <h4>${forecast.day.maxtemp_c}°C</h4>
+            </div>
+        `);
     });
 }
-
 function renderWeatherDashboard(data) {
     renderCurrentWeather(data);
     renderHighlights(data);
@@ -172,6 +216,8 @@ async function fetchOtherCountries(limit = 2) {
 
     container.innerHTML = "";
 
+    showLoader();
+
     for (const city of citiesToFetch) {
         try {
            const res = await fetch(`https://api.weatherapi.com/v1/forecast.json?key=${myKey}&q=${city}&days=1`);
@@ -186,6 +232,11 @@ async function fetchOtherCountries(limit = 2) {
         console.log("Invalid data for:", city);
          return;
       }
+
+            if (!data || data.error) {
+                showError(data?.error?.message || `Could not load weather for ${city}`);
+                continue;
+            }
 
             const rowHTML = `
                 <div class="location-row">
@@ -205,8 +256,11 @@ async function fetchOtherCountries(limit = 2) {
 
         } catch (err) {
             console.error("Error:", err);
+            showError(`Failed to fetch weather for ${city}`);
         }
     }
+
+    hideLoader();
 }
 
 function showAllCities() {
@@ -242,3 +296,29 @@ function getGreeting() {
     return greeting;
 }
 
+
+
+function showLoader() {
+    document.getElementById("loader")?.classList.remove("hidden");
+}
+
+function hideLoader() {
+    document.getElementById("loader")?.classList.add("hidden");
+}
+
+function showError(msg) {
+    const el = document.getElementById("error-box");
+    if (!el) return;
+
+    const msgEl = el.querySelector(".alert-message");
+    if (msgEl) msgEl.textContent = msg;
+
+    el.classList.remove("hidden");
+}
+
+function hideError() {
+    const el = document.getElementById("error-box");
+    if (!el) return;
+
+    el.classList.add("hidden");
+}

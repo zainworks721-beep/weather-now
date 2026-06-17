@@ -9,19 +9,39 @@
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://unpkg.com/aos@2.3.4/dist/aos.css" rel="stylesheet">
+    <link rel="stylesheet" href="loading.css">
 </head>
 
 <body>
 
-   <canvas id="bgCanvas"></canvas>
-    <div class="app-wrapper"  data-aos="fade-down" data-aos-delay="100">
+
+    <!-- ===== LOADER (paste into your page) ===== -->
+    <div id="loader" class="hidden">
+        <div class="radar">
+            <span class="radar-ring"></span>
+            <span class="radar-blip"></span>
+        </div>
+        <p class="loader-label">Scanning sky</p>
+    </div>
+
+    <!-- ===== ERROR BOX (paste into your page) ===== -->
+    <div id="error-box" class="hidden" role="alert">
+        <div class="alert-icon"><i class="ph-fill ph-lightning"></i></div>
+        <div class="alert-content">
+            <p class="alert-title">Forecast unavailable</p>
+            <p class="alert-message"></p>
+        </div>
+        <button class="alert-close" onclick="hideError()" aria-label="Dismiss">×</button>
+    </div>
+    <canvas id="bgCanvas"></canvas>
+    <div class="app-wrapper" data-aos="fade-down" data-aos-delay="100">
         <main class="dashboard">
             <header class="top-bar">
                 <div class="user-greeting">
                     <h2 id="greeting">Good Morning</h2>
                 </div>
 
-                <div class="search-section"  data-aos="fade-up" data-aos-delay="200">
+                <div class="search-section" data-aos="fade-up" data-aos-delay="200">
                     <div class="search-input">
                         <i class="ph ph-magnifying-glass"></i>
                         <input type="text" placeholder="Search your location" id="search">
@@ -74,7 +94,7 @@
                         <div id="others-container" class="control"></div>
                     </div>
 
-                     <div class="card forecast-card">
+                    <div class="card forecast-card">
                         <h3 class="heading">3 Day Forecast</h3>
                         <div class="forecast-list">
                             <div class="f-day">
@@ -108,31 +128,33 @@
                             </div>
 
 
-                        <div class="highlight-flex">
-                            <div class="h-item">
-                                <p><span class="icon-chip uv"><img src="hugeicons_uv-02.png" alt="UV icon" height="18" width="18"></span> UV index</p>
-                                <div class="itemp">
-                                    <h4>4<span> UV</span></h4>
-                                    <small>moderate</small>
+                            <div class="highlight-flex">
+                                <div class="h-item">
+                                    <p><span class="icon-chip uv"><img src="hugeicons_uv-02.png" alt="UV icon"
+                                                height="18" width="18"></span> UV index</p>
+                                    <div class="itemp">
+                                        <h4>4<span> UV</span></h4>
+                                        <small>moderate</small>
+                                    </div>
                                 </div>
-                            </div>
 
-                            <div class="h-item">
-                                <p><span class="icon-chip visibility"><i class="fa-solid fa-eye"></i></span> Visibility</p>
-                                <div class="itemp">
-                                    <h4>5<span> Km</span></h4>
-                                    <small>9:00 AM</small>
+                                <div class="h-item">
+                                    <p><span class="icon-chip visibility"><i class="fa-solid fa-eye"></i></span>
+                                        Visibility</p>
+                                    <div class="itemp">
+                                        <h4>5<span> Km</span></h4>
+                                        <small>9:00 AM</small>
+                                    </div>
                                 </div>
-                            </div>
 
-                               <div class="sunrise">
-                                <img src="image 9 (2).png" alt="Sunrise icon" height="75" width="75">
-                                <div class="textsunrise">
-                                    <p>Sunrise</p>
-                                    <h3>4:50 AM</h3>
+                                <div class="sunrise">
+                                    <img src="image 9 (2).png" alt="Sunrise icon" height="75" width="75">
+                                    <div class="textsunrise">
+                                        <p>Sunrise</p>
+                                        <h3>4:50 AM</h3>
+                                    </div>
                                 </div>
                             </div>
-                        </div>
 
                             <div class="sunrise">
                                 <img src="image 10.png" alt="Sunset icon" height="75" width="75">
@@ -152,16 +174,16 @@
     <script src="index.js"></script>
 
 
-     <!-- AOS -->
-  <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
+    <!-- AOS -->
+    <script src="https://unpkg.com/aos@2.3.4/dist/aos.js"></script>
 
-  <script>
-    AOS.init({
-      duration: 1200,
-      once: true,
-      offset: 120
-    });
-  </script>
+    <script>
+        AOS.init({
+            duration: 1200,
+            once: true,
+            offset: 120
+        });
+    </script>
 </body>
 
 </html>
